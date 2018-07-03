@@ -1,0 +1,110 @@
+<project name="feilong-clean-work" basedir="." default="cleanAll" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+	<description>清理相关文件，比如eclipse的Workspace无用文件,Maven Repository无用的文件</description>
+
+	<property file="build-feilong-config.properties" />
+
+	<!-- 清理 all -->
+	<target name="cleanAll">
+		<antcall target="cleanMavenRepository" inheritall="true" />
+		<antcall target="cleanEclipseWorkspace" inheritall="true" />
+		<antcall target="about" inheritall="true" />
+	</target>
+
+	<!-- 清理 Maven Repository -->
+	<target name="cleanMavenRepository">
+		<echo>will clean: [${path.root.repository}]</echo>
+
+		<delete verbose="true" includeemptydirs="true">
+			<fileset dir="${path.root.repository}">
+
+				<!--${version.zkclient} -->
+				<!--为了和早期的Ant版本兼容，单个的$字符被认为是$字符。正确使用特殊字符的方式是使用两个$，例如：“$$”。-->
+				<include name="**/*/$${*" />
+
+				<include name="**/*/_maven.repositories" />
+				<include name="**/*/_remote.repositories" />
+				<include name="**/*/resolver-status.properties" />
+
+				<include name="**/*/*.jar-not-available" />
+				<include name="**/*/*.lastUpdated" />
+				<include name="**/*/*-in-progress" />
+
+				<!--jul-to-slf4j-1.7.5-javadoc.jar.ahc09a96365d978469d.lock -->
+				<include name="**/*/*.lock" />
+
+				<include name="**/*/m2e-lastUpdated.properties" />
+
+			</fileset>
+		</delete>
+	</target>
+
+	<!-- 清理 Eclipse Workspace -->
+	<target name="cleanEclipseWorkspace">
+		<echo>will clean: [${path.root.Workspace}]</echo>
+
+		<!--
+			eclipse maven 配置文件, 每台电脑 可能不一样
+			::\.metadata\.plugins\org.eclipse.core.runtime\.settings\org.eclipse.m2e.core.prefs
+			<include name="**/.metadata/.plugins/org.eclipse.e4.workbench/workbench.xmi"/>
+		-->
+		<delete verbose="true" includeemptydirs="true">
+			<fileset dir="${path.root.Workspace}">
+				<!-- 重构记录 -->
+				<include name="**/.metadata/.plugins/org.eclipse.ltk.core.refactoring/.refactorings/**/*" />
+
+				<!-- del /q /s %Workspace%\baozun\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\* -->
+				<include name="**/.metadata/.plugins/org.eclipse.jst.jsp.core/jspsearch/**/*" />
+
+				<!-- del /q /s %Workspace%\baozun\.metadata\.plugins\org.eclipse.wst.jsdt.web.core\jssearch\* -->
+				<include name="**/.metadata/.plugins/org.eclipse.wst.jsdt.web.core/jssearch/**/*" />
+
+				<include name="**/.metadata/.plugins/org.eclipse.wst.jsdt.core/indexes/*.index" />
+				<include name="**/.metadata/.plugins/org.eclipse.wst.jsdt.core/indexes/savedIndexNames.txt" />
+
+				<!-- del /q /s %Workspace%\baozun\.metadata\.plugins\org.eclipse.jdt.core\savedIndexNames.txt -->
+				<include name="**/.metadata/.plugins/org.eclipse.jdt.core/savedIndexNames.txt" />
+
+				<!-- del /q /s %Workspace%\baozun\.metadata\.plugins\org.eclipse.jdt.core\*.index -->
+				<include name="**/.metadata/.plugins/org.eclipse.jdt.core/*.index" />
+
+				<!-- rd /q /s %Workspace%\baozun\.metadata\.plugins\org.eclipse.core.resources\.history -->
+				<include name="**/.metadata/.plugins/org.eclipse.core.resources/.history/**/*" />
+
+				<!-- eclipse m2e maven log -->
+				<include name="**/.metadata/.plugins/org.eclipse.m2e.logback.configuration/0.log" />
+				<!-- eclipse log -->
+				<include name="**/.metadata/*.log" />
+
+				<!-- eclipse 数据收集 -->
+				<include name="**/.metadata/.plugins\org.eclipse.epp.usagedata.recording\*.csv" />
+
+				<!-- eclipse -->
+				<include name="**/.metadata/.plugins\org.eclipse.core.resources\.snap" />
+
+				<!-- eclipse -->
+				<include name="**/.metadata/.plugins\**\*.snap" />
+
+				<!--
+					不能删 ,删掉之后 svn状态显示 不正常
+					::del /q %Workspace%\baozun\.metadata\.plugins\org.eclipse.core.resources\.projects\*\.indexes\*
+					<include name="**/.metadata/.plugins/org.eclipse.core.resources/.projects/*/.indexes/*" />
+				-->
+
+				<!--
+					del /q %Workspace%\baozun\.metadata\.plugins\org.eclipse.m2e.core\nexus\*
+					<include name="**/.metadata/.plugins/org.eclipse.m2e.core/nexus/**/*" /> -->
+			</fileset>
+		</delete>
+	</target>
+
+
+	<target name="about" description="about this build.xml">
+		<echo>
+	[${ant.project.name}] Ant build.xml:
+	Your ant version:[${ant.version}]
+
+	Author:[JinXin] (Learn from benjamin)
+	Any questions you can contact him.
+		</echo>
+	</target>
+</project>
